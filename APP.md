@@ -1,157 +1,151 @@
-# 🌱 TouchGrass
+# TouchGrass — Application Core
 
-TouchGrass is a **mobile-first Android APK** built to encourage users to spend less time on screens and more time outside.
+## 1. Overview
 
-Users choose an activity and available time, receive a short outdoor mission, complete it in the real world, and optionally use the camera to verify their discovery with local AI.
+TouchGrass is a mobile-first outdoor exploration app built with Vue 3 and Capacitor. It encourages users to spend less time on their phones through short, achievable outdoor missions.
 
-Example:
+Users choose an activity and available time, complete a real-world mission, and optionally use the camera and local AI to classify their discoveries.
 
-```text
-Choose: Nature
-Time: 30 min
-        ↓
-Mission: "Find a real leaf"
-        ↓
-Go outside
-        ↓
-Take photo
-        ↓
-On-device AI → "Likely a leaf — 94%"
-        ↓
-Mission complete → +20 XP
-```
+**Core principle:** Use technology to get people away from technology.
 
-The core experience works **offline**. No account, cloud AI API, or backend is required.
-
----
-
-## Core
-
-### 🎯 Mission System
-
-Predefined missions selected based on:
-
-- Activity: Walk / Nature / Exercise / Explore
-- Available time: 30 min / 1 hour / 2 hours
-- Difficulty
-- XP reward
-
-Normal application logic handles mission selection and progression.
-
-### 📷 Real-World Verification
-
-Some missions require a photo.
+## 2. Core Flow
 
 ```text
-Camera → Image → Local AI → Result → Mission verification
+Choose Activity + Available Time
+              ↓
+       Select a Mission
+              ↓
+          Go Outside
+              ↓
+       Complete Mission
+              ↓
+    Photo + Local AI (optional)
+              ↓
+      Verify and Earn XP
+              ↓
+       Update Progress
 ```
 
-AI is used specifically for recognizing real-world objects such as:
+## 3. Activities and Missions
 
-- Leaf
-- Flower
-- Tree
-- Rock
-- Plant
+| Activity | Purpose                               |
+| -------- | ------------------------------------- |
+| Walk     | Walk and notice the surroundings      |
+| Nature   | Discover plants and natural objects   |
+| Explore  | Discover unfamiliar places and things |
 
-### 🤖 On-Device AI
+Available durations: **30 minutes, 1 hour, or 2 hours**.
 
-A small vision model runs directly on the Android device.
+Missions are predefined and selected by application logic based on activity, duration, and difficulty. AI is not needed to generate missions.
+
+## 4. Camera and Local AI
+
+Some missions require a photo; others do not.
 
 ```text
-Vue
- ↓
-Capacitor Plugin
- ↓
-Native Android
- ↓
-AI Runtime
- ↓
-Lightweight Vision Model
- ↓
-Classification Result
+Camera Preview → Capture Image → LocalVisionService
+    → TensorFlow.js → MobileNet → Label + Confidence
+    → Mission Verification
 ```
 
-No HTTP request or API key is required.
+TensorFlow.js runs inside the application's WebView using a supported WebGL or WASM backend. Model and runtime assets must be available locally for offline inference.
 
-### ⭐ Progress
+```ts
+interface ClassificationResult {
+  label: string
+  confidence: number
+}
+```
 
-Local progress includes:
+Mission rules evaluate predictions against expected recognition targets. Classification is supporting evidence, not guaranteed proof of completion. MobileNet may require label mapping or fine-tuning for specific mission categories.
 
-- XP
-- Level
-- Completed missions
+Photos and predictions remain on-device unless the user explicitly chooses otherwise.
+
+## 5. Progress and Persistence
+
+Store progress locally using `localStorage` for simple data or IndexedDB for larger records.
+
+Track:
+
+- Total XP and level
+- Completed missions and mission history
 - Outdoor time
-- Discoveries
+- Nature discoveries
 
-Stored locally on the device.
+Progress and rewards are managed by application logic, not AI.
 
----
-
-## Architecture
+## 6. Architecture
 
 ```text
-                    TouchGrass APK
-                         │
-                  Vue 3 Application
-                         │
-                     Capacitor
-                         │
-          ┌──────────────┴──────────────┐
-          │                             │
-     App Logic                      Local AI
-          │                             │
-   Missions / XP                  Vision Model
-   Progress / Storage             AI Runtime
-          │                             │
-          └──────────────┬──────────────┘
-                         ↓
-                   Android Device
+Vue 3 + TypeScript
+├── Presentation: Pages, UI Components, SVGs
+├── Application Logic: Missions, Verification, XP
+├── Services: Camera, Local AI, Persistence
+├── State: Pinia Stores
+└── Device Runtime: Capacitor + Android
+    └── WebView: TensorFlow.js + MobileNet
 ```
 
-### AI Flow
+## 7. Target Project Structure
+
+_This is the intended structure, not a claim that every file already exists._
 
 ```text
-Camera
-  ↓
-Image
-  ↓
-LocalVisionService
-  ↓
-Capacitor Native Plugin
-  ↓
-Android AI Runtime
-  ↓
-Vision Model
-  ↓
-Object + Confidence
-  ↓
-Mission Verification
+touch-grass/
+├── public/
+│   ├── assets/icons/
+│   └── models/mobilenet/
+├── src/
+│   ├── assets/css/
+│   ├── components/
+│   │   ├── ui/
+│   │   ├── camera/
+│   │   └── mission/
+│   ├── composables/
+│   ├── constants/
+│   ├── data/missions.ts
+│   ├── pages/
+│   ├── router/
+│   ├── services/
+│   │   ├── camera.ts
+│   │   ├── localVision.ts
+│   │   └── storage.ts
+│   ├── stores/
+│   ├── types/
+│   ├── App.vue
+│   └── main.ts
+├── android/
+├── capacitor.config.ts
+├── index.html
+├── vite.config.ts
+├── uno.config.ts
+├── package.json
+└── APP.md
 ```
 
----
+| Directory        | Responsibility                              |
+| ---------------- | ------------------------------------------- |
+| `components/`    | Reusable UI, camera, and mission components |
+| `composables/`   | Reusable Vue behavior                       |
+| `data/`          | Predefined mission definitions              |
+| `pages/`         | Route-level screens                         |
+| `services/`      | Camera, inference, and storage operations   |
+| `stores/`        | Shared mission and progress state           |
+| `types/`         | Domain and TypeScript interfaces            |
+| `public/models/` | Locally bundled AI model assets             |
 
-## Stack
+Reconcile this target with the existing files before moving or renaming anything.
 
-| Area       | Technology                          |
-| ---------- | ----------------------------------- |
-| Frontend   | Vue 3                               |
-| Language   | TypeScript                          |
-| Build      | Vite                                |
-| Routing    | Vue Router                          |
-| State      | Pinia                               |
-| Styling    | UNO CSS                             |
-| Mobile     | Capacitor                           |
-| Camera     | Capacitor Camera                    |
-| Storage    | localStorage / IndexedDB            |
-| AI         | Lightweight on-device vision model  |
-| AI Runtime | Mobile runtime such as ONNX Runtime |
-| Native AI  | Capacitor Android plugin            |
+## 8. Technology Stack
 
----
+- **UI:** Vue 3, TypeScript, UnoCSS
+- **Build and routing:** Vite, Vue Router
+- **State:** Pinia
+- **Android:** Capacitor
+- **Camera:** Capacitor Community Camera Preview
+- **Local AI:** TensorFlow.js + MobileNet
+- **Persistence:** localStorage / IndexedDB
 
-## Project Principle
+## 9. Guiding Principle
 
-**Use technology to get people away from technology.**
-
-The phone provides the mission and verifies the real-world activity, then the user puts the phone away and goes outside.
+TouchGrass should make outdoor activities easier to start, not give users another reason to stay on their phones. It provides a mission, supports discovery, records progress, and then gets out of the way.

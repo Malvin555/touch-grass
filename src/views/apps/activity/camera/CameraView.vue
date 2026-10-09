@@ -64,7 +64,6 @@ async function startCamera() {
         throw new Error('Viewfinder element is not ready')
       }
 
-      // Let the native camera show through the WebView.
       document.documentElement.classList.add('camera-preview-active')
 
       const rect = element.getBoundingClientRect()

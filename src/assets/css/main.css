@@ -4,6 +4,7 @@ body,
 * {
   scrollbar-width: none;
   -ms-overflow-style: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html::-webkit-scrollbar,
@@ -18,9 +19,33 @@ body,
 #app {
   margin: 0;
   padding: 0;
-  height: 100%;
   width: 100%;
+  height: 100%;
   background-color: var(--tg-canvas);
+}
+
+html {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+button,
+[role='button'],
+img,
+svg {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+input,
+textarea,
+[contenteditable='true'],
+.allow-text-selection {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 
 .fade-enter-active,
@@ -36,12 +61,7 @@ body,
 html.camera-preview-active,
 html.camera-preview-active body,
 html.camera-preview-active #app,
-html.camera-preview-active .camera-page,
-html.camera-preview-active .camera-viewfinder {
+html.camera-preview-active #app > * {
   background: transparent !important;
   background-color: transparent !important;
-}
-
-html.camera-preview-active .camera-controls {
-  background-color: var(--tg-canvas);
 }

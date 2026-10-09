@@ -1,15 +1,18 @@
 import { CameraPreview } from '@capacitor-community/camera-preview'
 import { Capacitor } from '@capacitor/core'
 
-export async function startNativeCamera() {
+export async function startNativeCamera({ x, y, width, height }) {
   return CameraPreview.start({
     position: 'rear',
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(width),
+    height: Math.round(height),
     toBack: true,
     enableOpacity: true,
     storeToFile: false,
   })
 }
-
 export async function stopNativeCamera() {
   if (Capacitor.isNativePlatform()) {
     await CameraPreview.stop()
@@ -18,7 +21,7 @@ export async function stopNativeCamera() {
 
 export async function takePhoto(videoElement) {
   if (Capacitor.isNativePlatform()) {
-    const result = await startNativeCamera()
+    const result = await CameraPreview.capture({ quality: 85 })
 
     if (!result.value) {
       throw new Error('Camera did not return an image')
