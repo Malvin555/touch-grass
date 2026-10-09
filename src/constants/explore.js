@@ -1,0 +1,38 @@
+export const EXPLORE_PROMPTS = [
+  {
+    id: 'patterns',
+    title: 'Pattern Finder',
+    minutes: 10,
+    difficulty: 'Easy',
+    task: 'Find an interesting pattern in the world around you.',
+    challenge: 'Look for patterns you would normally walk past.',
+    points: 10,
+  },
+  {
+    id: 'colors',
+    title: 'Color Hunt',
+    minutes: 10,
+    difficulty: 'Easy',
+    task: 'Find three different colors in your surroundings.',
+    challenge: 'Notice a color you rarely pay attention to.',
+    points: 10,
+  },
+  {
+    id: 'tiny-details',
+    title: 'Little Details',
+    minutes: 15,
+    difficulty: 'Easy',
+    task: 'Find something small that most people overlook.',
+    challenge: 'Slow down and observe it carefully.',
+    points: 15,
+  },
+  {
+    id: 'new-perspective',
+    title: 'New Perspective',
+    minutes: 15,
+    difficulty: 'Easy',
+    task: 'Find a familiar thing from an unusual angle.',
+    challenge: 'Notice how changing your perspective changes what you see.',
+    points: 15,
+  },
+]
