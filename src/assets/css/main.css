@@ -32,3 +32,16 @@ body,
 .fade-leave-to {
   opacity: 0;
 }
+
+html.camera-preview-active,
+html.camera-preview-active body,
+html.camera-preview-active #app,
+html.camera-preview-active .camera-page,
+html.camera-preview-active .camera-viewfinder {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html.camera-preview-active .camera-controls {
+  background-color: var(--tg-canvas);
+}

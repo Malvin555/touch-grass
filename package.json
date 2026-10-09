@@ -13,8 +13,13 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@capacitor-community/camera-preview": "^8.0.2",
     "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8",
+    "@capacitor/camera": "^8.2.5",
     "@capacitor/core": "^8.5.3",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.22.0",
     "pinia": "^4.0.3",
     "pinia-plugin-state-persistence": "^1.12.20",
     "vue": "rc",

@@ -18,7 +18,7 @@ const tones = {
       :src="src"
       :alt="alt"
       class="absolute inset-0 size-full object-cover"
-      loading="lazy"
+      loading="eager"
     />
   </div>
 </template>

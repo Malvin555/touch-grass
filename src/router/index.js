@@ -1,8 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AppLayout from '../components/layout/AppLayout.vue'
-
-import { useWalkStore } from '@/stores/walk'
-import { useNatureStore } from '@/stores/nature'
 import { activityGuard } from '@/guards/activityGuard'
 
 const routes = [

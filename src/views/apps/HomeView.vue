@@ -7,16 +7,9 @@ import TgIconButton from '@/components/ui/TgIconButton.vue'
 import { ICONS } from '@/constants/icons'
 import appConfig from '@/config/app.json'
 import { useGo } from '@/composables/useGo'
+import { DAILY_CHALLENGES } from '@/constants/daily'
 
 const go = useGo()
-
-const DAILY_CHALLENGES = [
-  { condition: 'green', text: 'Find three greens' },
-  { condition: 'listen', text: 'Listen closely' },
-  { condition: 'tiny', text: 'Spot a tiny thing' },
-  { condition: 'clouds', text: 'Look at clouds' },
-  { condition: 'challenge', text: 'Explore nearby' },
-]
 
 const dailyChallenge = ref(DAILY_CHALLENGES[0])
 
