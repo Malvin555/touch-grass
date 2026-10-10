@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 
 import TgButton from '@/components/ui/TgButton.vue'
 import TgGalleryMemory from '@/components/ui/TgGalleryMemory.vue'
@@ -7,17 +7,39 @@ import TgPointsCounter from '@/components/ui/TgPointsCounter.vue'
 import TgSectionHeading from '@/components/ui/TgSectionHeading.vue'
 import TgStreakCard from '@/components/ui/TgStreakCard.vue'
 
+import { useSound } from '@/composables/useSound'
 import { useGo } from '@/composables/useGo'
 import { useProgressStore } from '@/stores/progress'
 import { useNatureStore } from '@/stores/nature'
 import { formatMemoryDate } from '@/utils/dateFormatter'
 
 const go = useGo()
-
 const progress = useProgressStore()
 const nature = useNatureStore()
+const { playSound } = useSound()
 
 const missionFailed = computed(() => nature.status === 'failed')
+const memories = computed(() => progress.memories ?? [])
+
+const memoryCount = computed(() => memories.value.length)
+let previousMemoryCount = memoryCount.value
+
+watch(memoryCount, (count) => {
+  if (count > previousMemoryCount) {
+    playSound('success')
+  }
+
+  previousMemoryCount = count
+})
+
+watch(
+  () => nature.status,
+  (status, previousStatus) => {
+    if (status === 'failed' && previousStatus !== 'failed') {
+      playSound('failure')
+    }
+  },
+)
 
 const days = computed(() => {
   const today = new Date()
@@ -38,8 +60,6 @@ const days = computed(() => {
     }
   })
 })
-
-const memories = computed(() => progress.memories)
 </script>
 
 <template>

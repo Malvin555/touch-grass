@@ -1,52 +1,17 @@
-const MAX_IMAGE_SIZE = 1280
-const JPEG_QUALITY = 0.75
+export async function compressImage(source, { maxSize = 1024, quality = 0.7 } = {}) {
+  const image = new Image()
+  image.decoding = 'async'
+  image.src = source
 
-function loadImage(source) {
-  return new Promise((resolve, reject) => {
-    const image = new Image()
-
-    image.onload = () => resolve(image)
-    image.onerror = () => reject(new Error('Could not load photo'))
-
-    image.src = source
+  await new Promise((resolve, reject) => {
+    image.onload = resolve
+    image.onerror = () => reject(new Error('Could not load captured photo'))
   })
-}
 
-function canvasToBlob(canvas) {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => {
-        if (blob) resolve(blob)
-        else reject(new Error('Could not compress photo'))
-      },
-      'image/jpeg',
-      JPEG_QUALITY,
-    )
-  })
-}
+  const scale = Math.min(1, maxSize / image.naturalWidth, maxSize / image.naturalHeight)
 
-function blobToDataUrl(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = () => reject(new Error('Could not read compressed photo'))
-
-    reader.readAsDataURL(blob)
-  })
-}
-
-export async function compressImage(source) {
-  if (typeof source !== 'string' || !source) {
-    throw new Error('A valid photo source is required')
-  }
-
-  const image = await loadImage(source)
-
-  const scale = Math.min(1, MAX_IMAGE_SIZE / Math.max(image.naturalWidth, image.naturalHeight))
-
-  const width = Math.max(1, Math.round(image.naturalWidth * scale))
-  const height = Math.max(1, Math.round(image.naturalHeight * scale))
+  const width = Math.round(image.naturalWidth * scale)
+  const height = Math.round(image.naturalHeight * scale)
 
   const canvas = document.createElement('canvas')
   canvas.width = width
@@ -55,12 +20,30 @@ export async function compressImage(source) {
   const context = canvas.getContext('2d')
 
   if (!context) {
-    throw new Error('Could not prepare photo for compression')
+    throw new Error('Could not create image canvas')
   }
 
   context.drawImage(image, 0, 0, width, height)
 
-  const blob = await canvasToBlob(canvas)
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (result) => {
+        if (result) {
+          resolve(result)
+        } else {
+          reject(new Error('Could not compress captured photo'))
+        }
+      },
+      'image/jpeg',
+      quality,
+    )
+  })
 
-  return blobToDataUrl(blob)
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(new Error('Could not read compressed photo'))
+    reader.readAsDataURL(blob)
+  })
 }

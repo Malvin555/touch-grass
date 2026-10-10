@@ -10,11 +10,13 @@ import TgCheckingOverlay from '@/components/ui/TgCheckingOverlay.vue'
 import { useGo } from '@/composables/useGo'
 import { useNatureStore } from '@/stores/nature'
 import { useProgressStore } from '@/stores/progress'
+import { useSound } from '@/composables/useSound'
 import { useNatureVerification } from '@/composables/useNatureVerification'
 
 const go = useGo()
 const nature = useNatureStore()
 const progress = useProgressStore()
+const { playSound } = useSound()
 
 const displayPhoto = ref('')
 
@@ -46,6 +48,8 @@ onMounted(async () => {
   nature.rejectPhoto()
 
   if (nature.status === 'failed') {
+    playSound('failure')
+
     validationMessage.value =
       'Two incorrect photos. This mission has ended. No points or journal entry were saved.'
   }

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import OnBoardingLayout from '@/components/layout/OnBoardingLayout.vue'
 import { activityGuard } from '@/guards/activityGuard'
+import { useOnboardingStore } from '@/stores/onboarding'
 
 const routes = [
   {
@@ -112,6 +113,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach((to) => {
+  const onboarding = useOnboardingStore()
+
+  if (to.name === 'home' && !onboarding.completed) {
+    return { name: 'welcome', replace: true }
+  }
+
+  return true
 })
 
 router.beforeEach(activityGuard)
