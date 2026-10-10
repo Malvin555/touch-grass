@@ -32,11 +32,9 @@ const mission = computed(() => {
 })
 
 onMounted(() => {
-  if (activity.value === 'nature' && !nature.missionId) {
+  if (activity.value === 'nature') {
     nature.chooseRandomMission()
-  }
-
-  if (activity.value === 'explore' && !explore.promptId) {
+  } else if (activity.value === 'explore') {
     explore.chooseRandomPrompt()
   }
 })

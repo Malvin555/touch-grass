@@ -83,8 +83,8 @@ export const useProgressStore = defineStore('progress', {
       return true
     },
 
-    completeNature(mission) {
-      if (!mission) return false
+    completeNature(mission, photo, result = null) {
+      if (!mission || !photo) return false
 
       const title = mission.title ?? mission.id
       if (!title) return false
@@ -99,9 +99,15 @@ export const useProgressStore = defineStore('progress', {
       this.memories.unshift({
         id: crypto.randomUUID(),
         activityKey: `nature:${mission.id ?? mission.title}`,
-        title,
+        title: `${title}: ${result?.result ?? 'Nature discovery'}`,
+        description:
+          result?.description ??
+          `AI identified ${result?.result ?? 'a natural object'} during your ${title} mission.`,
         createdAt,
         tone: 'nature',
+        photo,
+        result: result?.result ?? null,
+        confidence: result?.confidence ?? null,
         points,
       })
 

@@ -1,19 +1,48 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AppLayout from '../components/layout/AppLayout.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import OnBoardingLayout from '@/components/layout/OnBoardingLayout.vue'
 import { activityGuard } from '@/guards/activityGuard'
 
 const routes = [
+  {
+    path: '/onboarding',
+    component: OnBoardingLayout,
+    redirect: { name: 'welcome' },
+    children: [
+      {
+        path: 'welcome',
+        name: 'welcome',
+        meta: {
+          step: 0,
+          hero: true,
+          label: 'A little less online',
+          skip: true,
+          cta: 'Get Started',
+          next: 'how-it-works',
+        },
+        component: () => import('../views/onboarding/WelcomeView.vue'),
+      },
+      {
+        path: 'how-it-works',
+        name: 'how-it-works',
+        meta: { step: 1, label: 'A little less online', skip: true, cta: 'Next', next: 'collect' },
+        component: () => import('../views/onboarding/HowWorksView.vue'),
+      },
+      {
+        path: 'collect',
+        name: 'collect',
+        meta: { step: 2, back: 'how-it-works', cta: 'Let’s Go Outside', next: 'home' },
+        component: () => import('../views/onboarding/CollectDataView.vue'),
+      },
+    ],
+  },
+  // { path: '/gallery', name: 'gallery', component: () => import('../views/ComponentGallery.vue') },
+
   {
     path: '/',
     component: AppLayout,
     redirect: { name: 'home' },
     children: [
-      // {
-      //   path: 'demo',
-      //   name: 'demo',
-      //   meta: { title: 'A little less online' },
-      //   component: () => import('@/views/demo/DemoView.vue'),
-      // },
       {
         path: '',
         name: 'home',
@@ -59,7 +88,11 @@ const routes = [
       {
         path: 'moments',
         name: 'moments',
-        meta: { nav: 'back', backLabel: 'Home', backTo: 'home' },
+        meta: {
+          nav: 'back',
+          backLabel: 'Home',
+          backTo: 'home',
+        },
         component: () => import('@/views/apps/gallery/MomentsView.vue'),
       },
       {

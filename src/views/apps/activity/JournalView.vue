@@ -1,17 +1,23 @@
 <script setup>
 import { computed } from 'vue'
+
 import TgButton from '@/components/ui/TgButton.vue'
 import TgGalleryMemory from '@/components/ui/TgGalleryMemory.vue'
 import TgPointsCounter from '@/components/ui/TgPointsCounter.vue'
 import TgSectionHeading from '@/components/ui/TgSectionHeading.vue'
 import TgStreakCard from '@/components/ui/TgStreakCard.vue'
+
 import { useGo } from '@/composables/useGo'
 import { useProgressStore } from '@/stores/progress'
+import { useNatureStore } from '@/stores/nature'
 import { formatMemoryDate } from '@/utils/dateFormatter'
 
 const go = useGo()
 
 const progress = useProgressStore()
+const nature = useNatureStore()
+
+const missionFailed = computed(() => nature.status === 'failed')
 
 const days = computed(() => {
   const today = new Date()
@@ -40,9 +46,16 @@ const memories = computed(() => progress.memories)
   <div class="mx-auto flex min-h-0 w-full flex-1 flex-col justify-between gap-6 pb-5 pt-[18px]">
     <section class="flex flex-col gap-5">
       <header class="flex flex-col gap-1.5">
-        <h1 class="tg-heading text-[33px]">A little more outside.</h1>
+        <h1 class="tg-heading text-[33px]">
+          {{ missionFailed ? 'Every little try counts.' : 'A little more outside.' }}
+        </h1>
+
         <p class="font-sans text-[14px] leading-normal text-subtle">
-          Small adventures. Yours to keep.
+          {{
+            missionFailed
+              ? 'That mission did not work out this time. You can try another adventure whenever you are ready.'
+              : 'Small adventures. Yours to keep.'
+          }}
         </p>
       </header>
 
@@ -58,7 +71,7 @@ const memories = computed(() => progress.memories)
     <section class="flex flex-col gap-3">
       <TgSectionHeading title="Little discoveries" action-label="Only you" @click="go('moments')" />
 
-      <div class="grid grid-cols-3 gap-[9px] lg:grid-cols-3">
+      <div v-if="memories.length" class="grid grid-cols-3 gap-[9px]">
         <TgGalleryMemory
           v-for="m in memories.slice(0, 3)"
           :key="m.id"
@@ -67,6 +80,14 @@ const memories = computed(() => progress.memories)
           class="min-w-0"
         />
       </div>
+
+      <p v-else class="rounded-2xl bg-surface p-4 text-sm text-subtle">
+        {{
+          missionFailed
+            ? 'No discovery was saved for that mission. Your previous memories are safe.'
+            : 'Your discoveries will appear here after you complete an adventure.'
+        }}
+      </p>
     </section>
 
     <TgButton label="FIND ANOTHER ADVENTURE" @click="go('home')" />

@@ -17,18 +17,15 @@ export function activityGuard(to) {
 
   if (to.name === 'outside') {
     if (activity === 'walk') {
-      if (walk.status === 'running') return true
-      return redirectEndedActivity(walk.status)
+      return walk.status === 'running' ? true : redirectEndedActivity(walk.status)
     }
 
     if (activity === 'nature') {
-      if (nature.status === 'active') return true
-      return redirectEndedActivity(nature.status)
+      return nature.status === 'active' ? true : redirectEndedActivity(nature.status)
     }
 
     if (activity === 'explore') {
-      if (explore.status === 'active') return true
-      return redirectEndedActivity(explore.status)
+      return explore.status === 'active' ? true : redirectEndedActivity(explore.status)
     }
 
     return { name: 'home', replace: true }
@@ -43,6 +40,10 @@ export function activityGuard(to) {
       return true
     }
 
+    if (activity === 'nature' && nature.status === 'failed') {
+      return { name: 'home', replace: true }
+    }
+
     if (nature.status === 'completed' || explore.status === 'completed') {
       return { name: 'journal', replace: true }
     }
@@ -53,6 +54,10 @@ export function activityGuard(to) {
   if (to.name === 'verify') {
     if (activity === 'nature' && nature.status === 'verifying' && nature.photo) {
       return true
+    }
+
+    if (activity === 'nature' && nature.status === 'failed') {
+      return { name: 'home', replace: true }
     }
 
     if (nature.status === 'completed') {
